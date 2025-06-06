@@ -13,25 +13,31 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Gerador de Cards Japonês")
-        self.geometry("700x600")
+        self.geometry("500x600")
 
         self.label = ctk.CTkLabel(self, text="Digite as palavras separadas por vírgula:")
-        self.label.pack(pady=10)
+        self.label.pack(pady=5)
 
-        self.input = ctk.CTkTextbox(self, width=600, height=80)
+        self.input = ctk.CTkTextbox(self, width=450, height=40)
         self.input.pack(pady=5)
         self.input.bind("<Return>", self._on_enter)  # Novo: bind Enter
 
-        self.button = ctk.CTkButton(self, text="Gerar", command=self.gerar)
-        self.button.pack(pady=10)
+        self.action_frame = ctk.CTkFrame(self)
+        self.action_frame.pack(pady=10)
+
+        self.button = ctk.CTkButton(self.action_frame, text="Gerar", command=self.gerar)
+        self.button.pack(side="left", padx=5)
+
+        self.export_btn = ctk.CTkButton(self.action_frame, text="Exportar CSV", command=self.exportar_csv, state="disabled")
+        self.export_btn.pack(side="left", padx=5)
 
         self.result_label = ctk.CTkLabel(self, text="Resultados:")
         self.result_label.pack(pady=10)
 
-        self.button_frame = ctk.CTkFrame(self)
+        self.button_frame = ctk.CTkFrame(self, width=450, height=100)
         self.button_frame.pack(pady=5)
 
-        self.result_box = ctk.CTkTextbox(self, width=650, height=350)
+        self.result_box = ctk.CTkTextbox(self, width=450, height=200)
         self.result_box.pack(pady=5)
         self.result_box.configure(state="disabled")
 
@@ -39,8 +45,7 @@ class App(ctk.CTk):
         self.palavras = []
         self.botoes = {}  # Novo: armazena referência dos botões
 
-        self.export_btn = ctk.CTkButton(self, text="Exportar CSV", command=self.exportar_csv, state="disabled")
-        self.export_btn.pack(pady=5)
+
 
     def _on_enter(self, event):
         self.gerar()
@@ -92,12 +97,53 @@ class App(ctk.CTk):
 
     def mostrar_card(self, idx):
         card = self.cards[idx]
-        # Limpa a área de resultados e exibe os campos do card selecionado
-        self.result_box.configure(state="normal")
-        self.result_box.delete("1.0", ctk.END)
-        for campo, conteudo in card.items():
-            self.result_box.insert(ctk.END, f"{campo}: {conteudo}\n\n")
-        self.result_box.configure(state="disabled")
+        palavra_jap = self.botoes[idx].cget("text") if idx in self.botoes else "Palavra"
+        popup = ctk.CTkToplevel(self)
+        popup.title(palavra_jap)
+        popup.geometry("420x400")
+        popup.transient(self)
+        # Frame principal
+        frame = ctk.CTkFrame(popup)
+        frame.pack(fill="both", expand=True, padx=0, pady=0)
+        # Canvas e Scrollbar
+        canvas = ctk.CTkCanvas(frame, bg="#222", highlightthickness=0, width=400, height=340)
+        scrollbar = ctk.CTkScrollbar(frame, orientation="vertical", command=canvas.yview)
+        scroll_frame = ctk.CTkFrame(canvas, fg_color="#222")
+        scroll_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        canvas.create_window((0, 0), window=scroll_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        # Exibe campos do card, exceto 'Palavra', com botão de copiar ao lado e altura ajustada
+        for campo in ["Kanji", "Conjugação", "Tradução", "Definição", "Exemplos de uso", "Formalidade"]:
+            valor = card.get(campo, "-")
+            ctk.CTkLabel(scroll_frame, text=f"{campo}:", font=("Arial", 11, "bold"), anchor="w", text_color="#ffb", fg_color="#222").pack(fill="x", anchor="w")
+            linha_frame = ctk.CTkFrame(scroll_frame, fg_color="#222")
+            linha_frame.pack(fill="x", anchor="w", pady=(0,5))
+            # Calcula altura dinâmica
+            num_linhas = valor.count("\n") + max(1, len(valor) // 55)
+            altura = min(200, 20 + num_linhas * 18)  # Limite máximo para não ficar gigante
+            textbox = ctk.CTkTextbox(linha_frame, width=300, height=altura)
+            textbox.insert("1.0", valor)
+            textbox.configure(state="disabled")
+            textbox.pack(side="left", fill="x", expand=True)
+            def copiar_conteudo(txtbox=textbox):
+                self.clipboard_clear()
+                self.clipboard_append(txtbox.get("1.0", "end").strip())
+            btn_copiar = ctk.CTkButton(linha_frame, text="Copiar", width=60, command=copiar_conteudo)
+            btn_copiar.pack(side="left", padx=5)
+        # Fechar
+        btn_fechar = ctk.CTkButton(popup, text="Fechar", command=popup.destroy)
+        btn_fechar.pack(pady=10)
+        # Scroll mouse
+        def _on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        canvas.bind_all("<MouseWheel>", _on_mousewheel)
+        canvas.bind_all("<Button-4>", lambda event: canvas.yview_scroll(-1, "units"))
+        canvas.bind_all("<Button-5>", lambda event: canvas.yview_scroll(1, "units"))
 
     def exportar_csv(self):
         if not self.cards:
