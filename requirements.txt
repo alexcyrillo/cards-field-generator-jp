@@ -1,0 +1,4 @@
+python-dotenv
+pykakasi
+dearpygui
+customtkinter
