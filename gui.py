@@ -9,7 +9,7 @@ from tkinter import filedialog
 from gui.result_box import ResultBox
 from gui.word_button import WordButton
 from gui.card_popup import CardPopup
-from gui.menu.config_popup import ConfigPopup
+from gui.superior_menu.config_menu import ConfigPopup
 
 ctk.set_appearance_mode("System")
 ctk.set_default_color_theme("blue")
