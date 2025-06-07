@@ -39,7 +39,7 @@ def gerar_campos_para_palavra(word, log_func=None):
     return campos
 
 
-def gerar_cards(palavras, log_func=None):
+def gerar_cards(palavras, log_func=None, num_threads=5):
     todos = []
     def gerar_para_palavra(palavra):
         palavra_jap = romaji_to_japanese(palavra)
@@ -47,7 +47,7 @@ def gerar_cards(palavras, log_func=None):
             log_func(f"Gerando registro para: {palavra_jap}")
         return gerar_campos_para_palavra(palavra_jap, log_func=log_func)
 
-    with ThreadPoolExecutor(max_workers=min(5, len(palavras))) as executor:
+    with ThreadPoolExecutor(max_workers=min(num_threads, len(palavras))) as executor:
         futures = [executor.submit(gerar_para_palavra, palavra) for palavra in palavras]
         for future in as_completed(futures):
             todos.append(future.result())
