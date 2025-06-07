@@ -13,7 +13,7 @@ def gerar_campos_para_palavra(word, log_func=None):
         log_func(f"Gerando {word_jap}")
     # Monta prompt único para todos os campos, usando as chaves corretas do PROMPTS
     prompt_str = (
-        f"Para a palavra japonesa '{word_jap}', responda em JSON, com as chaves: 'Kanji', 'Conjugação', 'Tradução', 'Definição', 'Exemplos de uso', 'Formalidade'.\n"
+        f"Responda SOMENTE em JSON, sem explicações, para a palavra japonesa '{word_jap}', com as chaves: 'Kanji', 'Conjugação', 'Tradução', 'Definição', 'Exemplos de uso', 'Formalidade'.\n"
         "Exemplo de resposta:\n"
         '{"Kanji": "...", "Conjugação": "...", "Tradução": "...", "Definição": "...", "Exemplos de uso": "...", "Formalidade": "..."}'
         '\nSiga as seguintes regras:'
