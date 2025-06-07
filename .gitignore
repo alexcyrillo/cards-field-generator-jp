@@ -4,3 +4,6 @@
 /README.md
 /__pycache__
 /aaaa.csv
+/configs/__pycache__/prompts.cpython-310.pyc
+/.gitignore
+/core/__pycache__/card_generator.cpython-310.pyc

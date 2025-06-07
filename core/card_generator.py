@@ -1,19 +1,13 @@
 import time
-import jaconv
+from core.utils.romaji import romaji_to_japanese
 from integrations.openai_client import consultar_ia, is_japanese
 from configs.prompts import PROMPTS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import json
 
 
-def romaji_para_japones(palavra):
-    if is_japanese(palavra):
-        return palavra
-    return jaconv.alphabet2kana(palavra)
-
-
 def gerar_campos_para_palavra(word, log_func=None):
-    word_jap = romaji_para_japones(word)
+    word_jap = romaji_to_japanese(word)
     prompt = PROMPTS
     if log_func:
         log_func(f"Gerando {word_jap}")
@@ -48,7 +42,7 @@ def gerar_campos_para_palavra(word, log_func=None):
 def gerar_cards(palavras, log_func=None):
     todos = []
     def gerar_para_palavra(palavra):
-        palavra_jap = romaji_para_japones(palavra)
+        palavra_jap = romaji_to_japanese(palavra)
         if log_func:
             log_func(f"Gerando registro para: {palavra_jap}")
         return gerar_campos_para_palavra(palavra_jap, log_func=log_func)

@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY", "SUA_CHAVE_API")
-MODEL = "gpt-4.1-nano"  # Ou gpt-3.5-turbo
+MODEL = os.getenv("MODEL", "gpt-4.1-nano")  # Lê do .env
 
 def is_japanese(text):
     """Retorna True se o texto contém kana ou kanji."""
