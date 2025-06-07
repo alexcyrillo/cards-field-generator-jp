@@ -45,3 +45,7 @@ class CardPopup(ctk.CTkToplevel):
         canvas.bind_all("<MouseWheel>", _on_mousewheel)
         canvas.bind_all("<Button-4>", lambda event: canvas.yview_scroll(-1, "units"))
         canvas.bind_all("<Button-5>", lambda event: canvas.yview_scroll(1, "units"))
+
+        # Fechar ao clicar fora do popup
+        self.bind("<FocusOut>", lambda e: self.destroy())
+        self.focus_force()
