@@ -16,7 +16,7 @@ def consultar_ia(prompt):
         resposta = openai.chat.completions.create(
             model=MODEL,
             messages=[
-                {"role": "system", "content": "Você é um assistente especialista em japonês, que responde de forma clara e didática para brasileiros."},
+                {"role": "system", "content": "Você é um dicionario de japonês, que responde deforma concisa apenas o que é perguntado."},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,

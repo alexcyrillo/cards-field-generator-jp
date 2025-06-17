@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from core.card_generator import gerar_cards
-from core.utils.romaji import romaji_to_japanese
+from core.utils.romaji_conversor import romaji_to_japanese
 from core.utils.process_word import process_words
 from core.utils.export_csv import export_cards_csv
 from core.ui_log import log_ui
